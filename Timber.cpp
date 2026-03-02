@@ -38,6 +38,16 @@ beeSprite3.setPosition(resolution.x/2.0,resolution.y/2.0);
 beeSprite4.setTexture(beeTexture);
 beeSprite4.setPosition(resolution.x/2.0-300/2.0-65,resolution.y/1.5);
 
+Texture cloudTexture;
+cloudTexture.loadFromFile("graphics/cloud.png");
+Sprite cloudSprite;
+cloudSprite.setTexture(cloudTexture);
+cloudSprite.setPosition(0,0);
+Clock deltaClock,clock;
+float beeSpeed = 300.0f;
+bool paused=false;
+Time dt;
+
 while(window.isOpen()){
     Event event;
     while(window.pollEvent(event)){
@@ -48,6 +58,16 @@ while(window.isOpen()){
     if(Keyboard::isKeyPressed(Keyboard::Escape)){
         window.close();
     }
+    dt = deltaClock.restart();
+    if(!paused){
+        if(beeSprite1.getPosition().x<-100){
+            beeSprite1.setPosition(resolution.x,800);
+    }
+    else{
+        beeSprite1.setPosition(beeSprite1.getPosition().x-beeSpeed*dt.asSeconds(),800);
+    }
+    }
+
     window.clear();
     window.draw(backgroundSprite);
     window.draw(treeSprite);
@@ -55,6 +75,7 @@ while(window.isOpen()){
     window.draw(beeSprite2);
     window.draw(beeSprite3);
     window.draw(beeSprite4);
+    window.draw(cloudSprite);
     window.display();
 }
 return 0;
