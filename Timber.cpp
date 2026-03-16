@@ -1,5 +1,15 @@
 #include<SFML/Graphics.hpp>
+#include<sstream>
+
 using namespace sf;
+using namespace std;
+
+void updateBranches(int);
+const int NUM_BRANCHES=6;
+
+enum class side{LEFT,RIGHT,NONE};
+side branchPositions[NUM_BRANCHES];
+Sprite Branches[NUM_BRANCHES];
 
 int main(){
 Vector2f resolution;
@@ -90,8 +100,41 @@ messageText.setFillColor(Color::White);
 messageText.setCharacterSize(100);
 messageText.setString("Press Enter key to Start");
 FloatRect textRect=messageText.getLocalBounds();
+messageText.setOrigin((textRect.left + textRect.width) / 2.0, (textRect.top + textRect.height) / 2.0);
+messageText.setPosition(resolution.x / 2.0, resolution.y / 2.0);
 
+//Branch
+Texture branchTexture;
+branchTexture.loadFromFile("graphics/branch.png");
+for(int i=0;i<NUM_BRANCHES;i++){
+    Branches[i].setTexture(branchTexture);
+    Branches[i].setOrigin(220,20);
+    Branches[i].setPosition(-2000,-2000);
+}
 
+// Score
+Text scoreText;
+scoreText.setFont(font);
+scoreText.setFillColor(Color::Red);
+scoreText.setCharacterSize(75);
+scoreText.setString("Score = 0");
+scoreText.setPosition(20, 20);
+int score = 0;
+
+updateBranches(1);
+updateBranches(2);
+updateBranches(3);
+updateBranches(4);
+updateBranches(5);
+
+//Player
+Texture playerTexture;
+playerTexture.loadFromFile("graphics/player.png");
+Sprite playerSprite;
+playerSprite.setTexture(playerTexture);
+playerSprite.setPosition(resolution.x/2+150+50,resolution.y-250);
+
+//Game Loop
 while(window.isOpen()){
     Event event;
     while(window.pollEvent(event)){
@@ -111,6 +154,10 @@ while(window.isOpen()){
     timeRemaining -= dt.asSeconds();
     if(timeRemaining<=0.0){
         paused=true;
+        messageText.setString("Time Out!!!");
+        textRect = messageText.getLocalBounds();
+        messageText.setOrigin(textRect.left + textRect.width / 2.0, textRect.top + textRect.height / 2.0);
+        messageText.setPosition(resolution.x / 2.0, resolution.y / 2.0);
     }
     timeBar.setSize(Vector2f(timeBarWidthPerSecond*timeRemaining,timeBarHeight));
     if(!cloudActive1){
@@ -172,19 +219,67 @@ while(window.isOpen()){
             beeActive=false;
         }
     }
+    std::stringstream ss;
+    ss<<"Score = "<<score;
+    scoreText.setString(ss.str());
+    for(int i=0;i<NUM_BRANCHES;i++){
+        float branchHeight=i*150;
+        if(branchPositions[i]==side::LEFT){
+        Branches[i].setPosition(resolution.x/2-200,branchHeight);
+        Branches[i].setRotation(180);//flip //argument in degree
+        }
+        else if(branchPositions[i]==side::RIGHT){
+        Branches[i].setPosition(resolution.x/2+200,branchHeight);
+        Branches[i].setRotation(0);
+        }
+        else{
+          Branches[i].setPosition(3000,branchHeight);
+        }
+        updateBranches(1);
+        updateBranches(2);
+        updateBranches(3);
+        updateBranches(4);
+        updateBranches(5);
+
+    }
    }
     window.clear();
     window.draw(backgroundSprite);
     window.draw(cloudSprite1);
     window.draw(cloudSprite2);
     window.draw(cloudSprite3);
+    for(int i=0;i<NUM_BRANCHES;i++){
+        window.draw(Branches[i]);
+    }
     window.draw(treeSprite);
     window.draw(beeSprite1);
+    window.draw(playerSprite);
     // window.draw(beeSprite2);
     // window.draw(beeSprite3);
     // window.draw(beeSprite4);
+    if (paused){
+        window.draw(messageText);
+    }
+    window.draw(scoreText);
     window.draw(timeBar);
     window.display();
 }
 return 0;
+}
+
+void updateBranches(int seed){
+   //Shift each position one place to right
+   for(int i=NUM_BRANCHES;i>0;i--){
+      branchPositions[i]=branchPositions[i-1];
+   }
+   //update 0th position
+   srand(time(0)+seed);
+   int r=rand()%3;
+   switch(r){
+    case 0:branchPositions[0]=side::LEFT;
+           break;
+    case 1:branchPositions[1]=side::RIGHT;
+           break;
+    default:branchPositions[2]=side::NONE; 
+   } 
 }
