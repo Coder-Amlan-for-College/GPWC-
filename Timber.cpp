@@ -125,14 +125,52 @@ updateBranches(1);
 updateBranches(2);
 updateBranches(3);
 updateBranches(4);
-updateBranches(5);
+updateBranches(5); 
 
 //Player
 Texture playerTexture;
 playerTexture.loadFromFile("graphics/player.png");
 Sprite playerSprite;
 playerSprite.setTexture(playerTexture);
-playerSprite.setPosition(resolution.x/2+150+50,resolution.y-250);
+playerSprite.setPosition(580,720);
+
+//Side of the player
+side playerSide = side::LEFT;
+
+//Grave Stone
+Texture ripTexture;
+ripTexture.loadFromFile("graphics/rip.png");
+Sprite ripSprite;
+ripSprite.setTexture(ripTexture);
+ripSprite.setPosition(600,860);
+
+//Axe
+Texture axeTexture;
+axeTexture.loadFromFile("graphics/axe.png");
+Sprite axeSprite;
+axeSprite.setTexture(axeTexture);
+axeSprite.setPosition(700,830);
+
+//Line up the Axe with the Tree
+const int AXE_POSITION_LEFT=700;
+const int AXE_POSITION_RIGHT=1075;
+
+//Add Log
+Texture logTexture;
+logTexture.loadFromFile("graphics/log.png");
+Sprite logSprite;
+axeSprite.setTexture(logTexture);
+axeSprite.setPosition(810,720);
+
+//Flying the log
+bool logActive=false;
+float logSpeedX=1000;
+float logSpeedY=-1500;
+
+//Player Input
+bool acceptInput=false;
+
+//Prepare the sounds: chopping,out of time,death
 
 //Game Loop
 while(window.isOpen()){
@@ -145,12 +183,56 @@ while(window.isOpen()){
     if(Keyboard::isKeyPressed(Keyboard::Escape)){
         window.close();
     }
+    
     if(Keyboard::isKeyPressed(Keyboard::Return)){//Keyboard::Enter-->Both works
-        paused=!paused;
-        timeRemaining=5.0f;
+        paused=false;
+        timeRemaining=6.0f;
+        //Reset score
+        score=0;
+        //Make all Branches disappear
+        for(int i=0;i<NUM_BRANCHES;i++){
+            branchPositions[i]=side::NONE;
+        }
+        //Make grave position hidden
+        ripSprite.setPosition(2000,2000);
+        //Move the player into the position
+        ripSprite.setPosition(580,720);
+        //Make acceptInput true
+        acceptInput=true;
+    }
+    Time dt = clock.restart();
+    if(acceptInput){
+        if(Keyboard::isKeyPressed(Keyboard::Right)){
+            score++;
+            timeRemaining -= dt.asSeconds();
+            playerSide=side::RIGHT;
+            playerSprite.setPosition(1200,720);
+            axeSprite.setPosition(AXE_POSITION_RIGHT,axeSprite.getPosition().y);
+            logSprite.setPosition(810,720);
+            logSpeedX=5000;
+            logActive=true;
+            updateBranches(score);
+            //acceptInput=false;
+            //play a chop sound
+        }
+        //Left Key
+        if(Keyboard::isKeyPressed(Keyboard::Left)){
+            score++;
+            timeRemaining -= dt.asSeconds();
+            playerSide=side::LEFT;
+            playerSprite.setPosition(580,720);
+            axeSprite.setPosition(AXE_POSITION_LEFT,axeSprite.getPosition().y);
+            logSprite.setPosition(810,720);
+            logSpeedX=-5000;
+            logActive=true;
+            updateBranches(score);
+            //acceptInput=false;
+            //play a chop sound
+        }
+
     }
     if(!paused){
-    Time dt = clock.restart();
+    //Time dt = clock.restart();
     timeRemaining -= dt.asSeconds();
     if(timeRemaining<=0.0){
         paused=true;
@@ -235,13 +317,32 @@ while(window.isOpen()){
         else{
           Branches[i].setPosition(3000,branchHeight);
         }
-        updateBranches(1);
-        updateBranches(2);
-        updateBranches(3);
-        updateBranches(4);
-        updateBranches(5);
+        // updateBranches(1);
+        // updateBranches(2);
+        // updateBranches(3);
+        // updateBranches(4);
+        // updateBranches(5);
 
+        //Handling a flying log
+        if(logActive){
+            logSprite.setPosition(logSprite.getPosition().x+logSpeedX*dt.asSeconds(),logSprite.getPosition().y+logSpeedY*dt.asSeconds());
+            if(logSprite.getPosition().x<-100 || logSprite.getPosition().x>2000){
+                logSprite.setPosition(810,720);
+                logActive=false;
+            }
+        }
     }
+    if(branchPositions[5]==playerSide){
+            paused=true;
+            acceptInput=false;
+            playerSprite.setPosition(2000,2000);
+            ripSprite.setPosition(600,860);
+            messageText.setString("Game Over!!!");
+            textRect = messageText.getLocalBounds();
+            messageText.setOrigin((textRect.left+textRect.width)/2.0,(textRect.top+textRect.height)/2.0);
+            messageText.setPosition(resolution.x/2.0,resolution.y/2.0);
+            //play sound of death
+        }
    }
     window.clear();
     window.draw(backgroundSprite);
@@ -252,8 +353,11 @@ while(window.isOpen()){
         window.draw(Branches[i]);
     }
     window.draw(treeSprite);
-    window.draw(beeSprite1);
     window.draw(playerSprite);
+    window.draw(axeSprite);
+    window.draw(logSprite);
+    window.draw(ripSprite);
+    window.draw(beeSprite1);
     // window.draw(beeSprite2);
     // window.draw(beeSprite3);
     // window.draw(beeSprite4);
