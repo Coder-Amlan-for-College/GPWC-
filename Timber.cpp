@@ -119,14 +119,7 @@ scoreText.setFillColor(Color::Red);
 scoreText.setCharacterSize(75);
 scoreText.setString("Score = 0");
 scoreText.setPosition(20, 20);
-int score = 0;
-
-updateBranches(1);
-updateBranches(2);
-updateBranches(3);
-updateBranches(4);
-updateBranches(5); 
-
+int score = 0; 
 //Player
 Texture playerTexture;
 playerTexture.loadFromFile("graphics/player.png");
@@ -159,8 +152,8 @@ const int AXE_POSITION_RIGHT=1075;
 Texture logTexture;
 logTexture.loadFromFile("graphics/log.png");
 Sprite logSprite;
-axeSprite.setTexture(logTexture);
-axeSprite.setPosition(810,720);
+logSprite.setTexture(logTexture);
+logSprite.setPosition(810,720);
 
 //Flying the log
 bool logActive=false;
@@ -179,6 +172,10 @@ while(window.isOpen()){
         if(event.type==Event::Closed){
             window.close();
         }
+        if(event.type==Event::KeyReleased && !paused){
+           acceptInput=true;
+           axeSprite.setPosition(2000,axeSprite.getPosition().y);
+        }
     }
     if(Keyboard::isKeyPressed(Keyboard::Escape)){
         window.close();
@@ -196,15 +193,14 @@ while(window.isOpen()){
         //Make grave position hidden
         ripSprite.setPosition(2000,2000);
         //Move the player into the position
-        ripSprite.setPosition(580,720);
+        playerSprite.setPosition(580,720);
         //Make acceptInput true
         acceptInput=true;
-    }
-    Time dt = clock.restart();
+    } 
     if(acceptInput){
         if(Keyboard::isKeyPressed(Keyboard::Right)){
             score++;
-            timeRemaining -= dt.asSeconds();
+            timeRemaining += 2/score+0.15;
             playerSide=side::RIGHT;
             playerSprite.setPosition(1200,720);
             axeSprite.setPosition(AXE_POSITION_RIGHT,axeSprite.getPosition().y);
@@ -212,13 +208,13 @@ while(window.isOpen()){
             logSpeedX=5000;
             logActive=true;
             updateBranches(score);
-            //acceptInput=false;
+            acceptInput=false;
             //play a chop sound
         }
         //Left Key
         if(Keyboard::isKeyPressed(Keyboard::Left)){
             score++;
-            timeRemaining -= dt.asSeconds();
+            timeRemaining += 2/score+0.15;
             playerSide=side::LEFT;
             playerSprite.setPosition(580,720);
             axeSprite.setPosition(AXE_POSITION_LEFT,axeSprite.getPosition().y);
@@ -226,13 +222,13 @@ while(window.isOpen()){
             logSpeedX=-5000;
             logActive=true;
             updateBranches(score);
-            //acceptInput=false;
+            acceptInput=false;
             //play a chop sound
         }
 
     }
     if(!paused){
-    //Time dt = clock.restart();
+    Time dt = clock.restart();
     timeRemaining -= dt.asSeconds();
     if(timeRemaining<=0.0){
         paused=true;
@@ -373,7 +369,7 @@ return 0;
 
 void updateBranches(int seed){
    //Shift each position one place to right
-   for(int i=NUM_BRANCHES;i>0;i--){
+   for(int i=NUM_BRANCHES-1;i>0;i--){
       branchPositions[i]=branchPositions[i-1];
    }
    //update 0th position
@@ -382,8 +378,8 @@ void updateBranches(int seed){
    switch(r){
     case 0:branchPositions[0]=side::LEFT;
            break;
-    case 1:branchPositions[1]=side::RIGHT;
+    case 1:branchPositions[0]=side::RIGHT;
            break;
-    default:branchPositions[2]=side::NONE; 
+    default:branchPositions[0]=side::NONE; 
    } 
 }
