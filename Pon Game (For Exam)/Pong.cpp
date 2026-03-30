@@ -62,6 +62,28 @@ int main(){
      else{
         bat.stopRight();
      }
+     if(Keyboard::isKeyPressed(Keyboard::Up)){
+        if(bat.get_Position().top<=0){
+            bat.stopUp();
+        }
+        else{
+            bat.moveUp();
+        }
+     }
+     else{
+        bat.stopUp();
+     }
+     if(Keyboard::isKeyPressed(Keyboard::Down)){
+        if(bat.get_Position().top + bat.get_Shape().getSize().y >= window.getSize().y){
+            bat.stopDown();
+        }
+        else{
+            bat.moveDown();
+        }
+     }
+     else{
+        bat.stopDown();
+     }
    Time dt = clock.restart();
    bat.update(dt);
    ball.update(dt);
@@ -91,6 +113,7 @@ int main(){
    }
    if(ball.getPosition().intersects(bat.get_Position())){
       score++;
+      ball.updateSpeed();
       ball.reboundBatOrTop();
       ball.update(dt);
       bat.update(dt);

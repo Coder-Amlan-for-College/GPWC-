@@ -25,6 +25,7 @@ float Ball::getXVelocity(){
 
 void Ball::reboundSides(){
     m_DirectionX=-m_DirectionX;
+    //m_DirectionY=-m_DirectionY;
 }
 
 void Ball::reboundBatOrTop(){
@@ -41,4 +42,8 @@ void Ball::update(Time dt){
     m_Position.y += m_DirectionY*m_Speed*dt.asSeconds();
 
     m_Shape.setPosition(m_Position);
+}
+
+void Ball::updateSpeed(){
+    m_Speed += m_Speed*0.1;
 }
