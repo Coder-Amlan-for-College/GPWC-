@@ -25,7 +25,7 @@ int main()
     resolution.x = 1920;
     resolution.y = 1080;
 
-    RenderWindow window(VideoMode(resolution.x,resolution.y),"Flappy Bird", Style::Fullscreen);
+    RenderWindow window(VideoMode(resolution.x,resolution.y),"Flappy!!!");
 
     View mainView(FloatRect(0,0, resolution.x,resolution.y));
 
@@ -51,11 +51,13 @@ int main()
     highScoreText.setFont(font);
     highScoreText.setCharacterSize(50);
     highScoreText.setPosition(1400, 30);
+    highScoreText.setFillColor(Color::Black);
 
     Text gameOverText;
     gameOverText.setFont(font);
     gameOverText.setCharacterSize(70);
     gameOverText.setPosition(650, 450);
+    gameOverText.setFillColor(Color::Black);
 
     // SoundBuffer flapBuffer;
     // flapBuffer.loadFromFile("assets/flap.wav");
@@ -168,9 +170,20 @@ int main()
             for (int i = 0;i < numPipes;i++)
             {
                 pipes[i].update(dtAsSeconds);
-                if(pipes[i].isOffScreen()){
-                    float gapY = 100+rand()%400;
-                    pipes[i].spawn(resolution.x,gapY,pipeGap);
+                if (pipes[i].isOffScreen())
+                {
+                    float farthestX = 0;
+                    for (int j = 0; j < numPipes; j++)
+                    {
+                        float currentX =pipes[j].getTopSprite().getPosition().x;
+
+                        if (currentX > farthestX)
+                        {
+                            farthestX = currentX;
+                        }
+                    }                    
+                    float gapY=250+rand()%400;
+                    pipes[i].spawn(farthestX + 450,gapY,pipeGap);
                 }
 
                 if (pipes[i].checkCollision(bird.getPosition()))

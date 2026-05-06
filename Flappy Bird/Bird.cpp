@@ -42,7 +42,7 @@ Bird::Bird()
 
     m_Sprite.setTexture(m_Texture);
 
-    m_Sprite.setScale(0.15f, 0.15f);
+    m_Sprite.setScale(0.4f, 0.4f);
 
     m_Velocity = 0;
 }
@@ -86,8 +86,8 @@ Vector2f Bird::getCenter()
 
 void Bird::reset()
 {
-    m_Position.x = 300;
-    m_Position.y = 400;
+    m_Position.x = 500;
+    m_Position.y = 540;
 
     m_Velocity = 0;
 }
