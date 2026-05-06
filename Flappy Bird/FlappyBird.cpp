@@ -28,13 +28,6 @@ int main()
 
     Clock clock;
 
-    // Texture bgTexture;
-    // bgTexture.loadFromFile(
-    //     "assets/background.png");
-
-    // Sprite background;
-    // background.setTexture(bgTexture);
-
     Font font;
     font.loadFromFile("assets/KOMIKAP_.ttf");
 
@@ -84,23 +77,30 @@ int main()
 
     levelText.setPosition(resolution.x / 2.0f,resolution.y / 2.0f);
 
-    // SoundBuffer flapBuffer;
-    // flapBuffer.loadFromFile("assets/flap.wav");
+    SoundBuffer flapBuffer;
+    flapBuffer.loadFromFile("sounds/flap.mp3");
+    Sound flapSound;
+    flapSound.setBuffer(flapBuffer);
 
-    // Sound flapSound;
-    // flapSound.setBuffer(flapBuffer);
+    SoundBuffer hitBuffer;
+    hitBuffer.loadFromFile("sounds/hit.mp3");
+    Sound hitSound;
+    hitSound.setBuffer(hitBuffer);
 
-    // SoundBuffer hitBuffer;
-    // hitBuffer.loadFromFile("assets/hit.wav");
-
-    // Sound hitSound;
-    // hitSound.setBuffer(hitBuffer);
-
-    // Music bgMusic;
-    // bgMusic.openFromFile("assets/bgmusic.ogg");
-
-    // bgMusic.setLoop(true);
-    // bgMusic.play();
+    SoundBuffer pointBuffer;
+    pointBuffer.loadFromFile("sounds/point.mp3");
+    Sound pointSound;
+    pointSound.setBuffer(pointBuffer);
+  
+    SoundBuffer dieBuffer;
+    dieBuffer.loadFromFile("sounds/die.mp3");
+    Sound dieSound;
+    dieSound.setBuffer(dieBuffer);    
+     
+    SoundBuffer swooshBuffer;
+    swooshBuffer.loadFromFile("sounds/swoosh.mp3");
+    Sound swooshSound;
+    swooshSound.setBuffer(swooshBuffer);
 
     Bird bird;
     bird.spawn(resolution);
@@ -142,6 +142,7 @@ int main()
 
                 if (event.key.code == Keyboard::Enter)
                 {
+                    swooshSound.play();
                     if (state == State::PLAYING)
                     {
                         state = State::PAUSED;
@@ -156,11 +157,12 @@ int main()
                 if (event.key.code ==Keyboard::Space && state == State::PLAYING)
                 {
                     bird.flap();
-                    //flapSound.play();
+                    flapSound.play();
                 }
 
                 if (event.key.code ==Keyboard::R && state == State::GAME_OVER)
                 {
+                    swooshSound.play();
                     score = 0;
                     delete[] pipes;
                     pipes = createPipes(numPipes,resolution.x,pipeGap);
@@ -172,18 +174,21 @@ int main()
                 {
                     if (event.key.code == Keyboard::Num1)
                     {
+                        swooshSound.play();
                         pipeGap = 300;
                         state = State::PLAYING;
                     }
 
                     if (event.key.code == Keyboard::Num2)
                     {
+                        swooshSound.play();
                         pipeGap = 220;
                         state = State::PLAYING;
                     }
 
                     if (event.key.code == Keyboard::Num3)
                     {
+                        swooshSound.play();
                         pipeGap = 170;
                         state = State::PLAYING;
                     }
@@ -220,19 +225,22 @@ int main()
 
                 if (pipes[i].checkCollision(bird.getPosition()))
                 {
-                    //hitSound.play();
+                    hitSound.play();
+                    dieSound.play();
                     state =State::GAME_OVER;
                 }
 
                 if (pipes[i].isPassed(bird.getCenter().x))
                 {
+                    pointSound.play();
                     score++;
+
                 }
             }
 
             if (bird.getCenter().y <0 ||bird.getCenter().y >resolution.y)
             {
-                //hitSound.play();
+                hitSound.play();
                 state=State::GAME_OVER;
             }
 
@@ -254,7 +262,6 @@ int main()
 
         window.setView(mainView);
 
-        // window.draw(background);
 
         for (int i = 0;i < numPipes;i++)
         {
