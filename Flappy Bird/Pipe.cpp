@@ -52,8 +52,15 @@ Pipe::Pipe()
     m_TopPipe.setTexture(m_Texture);
     m_BottomPipe.setTexture(m_Texture);
 
-    m_TopPipe.setScale(1.3f, -2.8f);
-    m_BottomPipe.setScale(1.3f, 2.8f);
+    // m_TopPipe.setOrigin(m_Texture.getSize().x/2.0f,m_Texture.getSize().y/2.0f);
+    // m_BottomPipe.setOrigin(m_Texture.getSize().x/2.0f,m_Texture.getSize().y/2.0f);
+    
+    m_TopPipe.setOrigin(0,0);
+    m_TopPipe.setScale(1.3f,2.8f);
+    
+    m_BottomPipe.setOrigin(0,m_Texture.getSize().y);
+    m_BottomPipe.setScale(1.3f, -2.8f);
+    
     m_Speed = 300;
 
     m_Passed = false;
@@ -73,7 +80,7 @@ void Pipe::spawn(float startX,float gapY,float gapSize)
     float topY =gapY - gapSize / 2;
     float bottomY =gapY + gapSize / 2;
 
-    m_TopPipe.setPosition(startX,topY);
+    m_TopPipe.setPosition(startX,topY-m_Texture.getSize().y*2.8f);
     m_BottomPipe.setPosition(startX,bottomY);
     m_Passed = false;
 }
@@ -97,7 +104,7 @@ void Pipe::update(float dt)
     float x =m_TopPipe.getPosition().x- m_Speed * dt;
 
     // TOP PIPE
-    m_TopPipe.setPosition(x,m_GapY - m_GapSize / 2);
+    m_TopPipe.setPosition(x,m_GapY-m_GapSize/2-m_Texture.getSize().y*2.8f);
 
     // BOTTOM PIPE
     m_BottomPipe.setPosition(x,m_GapY + m_GapSize / 2);
