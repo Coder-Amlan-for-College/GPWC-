@@ -172,21 +172,21 @@ int main()
 
                 if (state == State::LEVEL_SELECT)
                 {
-                    if (event.key.code == Keyboard::Num1)
+                    if (event.key.code == Keyboard::Num1 || event.key.code == Keyboard::Numpad1)
                     {
                         swooshSound.play();
                         pipeGap = 300;
                         state = State::PLAYING;
                     }
 
-                    if (event.key.code == Keyboard::Num2)
+                    if (event.key.code == Keyboard::Num2 || event.key.code == Keyboard::Numpad2)
                     {
                         swooshSound.play();
                         pipeGap = 220;
                         state = State::PLAYING;
                     }
 
-                    if (event.key.code == Keyboard::Num3)
+                    if (event.key.code == Keyboard::Num3 || event.key.code == Keyboard::Numpad3)
                     {
                         swooshSound.play();
                         pipeGap = 170;
