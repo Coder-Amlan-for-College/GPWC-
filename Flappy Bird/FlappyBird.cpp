@@ -242,6 +242,7 @@ int main()
             {
                 hitSound.play();
                 state=State::GAME_OVER;
+                dieSound.play();
             }
 
             if (score > highScore)
