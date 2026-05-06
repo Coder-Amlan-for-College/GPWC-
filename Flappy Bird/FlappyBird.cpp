@@ -11,17 +11,14 @@ using namespace sf;
 
 int main()
 {
-    enum class State
-    {
-        PAUSED,
-        GAME_OVER,
-        PLAYING
-    };
+    enum class State{
+    LEVEL_SELECT,
+    PAUSED,
+    GAME_OVER,
+    PLAYING};
 
-    State state = State::PAUSED;
-
+    State state = State::LEVEL_SELECT;
     Vector2f resolution;
-
     resolution.x = 1920;
     resolution.y = 1080;
 
@@ -58,6 +55,34 @@ int main()
     gameOverText.setCharacterSize(70);
     gameOverText.setPosition(650, 450);
     gameOverText.setFillColor(Color::Black);
+
+    Text pauseText;
+    pauseText.setFont(font);
+    pauseText.setFillColor(Color::Black);
+    pauseText.setCharacterSize(100);
+    pauseText.setString("GAME PAUSED\nPRESS ENTER");
+
+    FloatRect pauseRect = pauseText.getLocalBounds();
+
+    pauseText.setOrigin((pauseRect.left + pauseRect.width) / 2.0f,(pauseRect.top + pauseRect.height) / 2.0f);
+    pauseText.setPosition(resolution.x / 2.0f,resolution.y / 2.0f);
+
+    Text levelText;
+    levelText.setFont(font);
+    levelText.setFillColor(Color::Black);
+    levelText.setCharacterSize(80);
+
+    levelText.setString(
+        "SELECT DIFFICULTY\n\n"
+        "1 - EASY\n"
+        "2 - MEDIUM\n"
+        "3 - HARD");
+
+    FloatRect levelRect = levelText.getLocalBounds();
+
+    levelText.setOrigin((levelRect.left + levelRect.width) / 2.0f,(levelRect.top + levelRect.height) / 2.0f);
+
+    levelText.setPosition(resolution.x / 2.0f,resolution.y / 2.0f);
 
     // SoundBuffer flapBuffer;
     // flapBuffer.loadFromFile("assets/flap.wav");
@@ -115,15 +140,16 @@ int main()
                     window.close();
                 }
 
-                if (event.key.code==Keyboard::Enter)
+                if (event.key.code == Keyboard::Enter)
                 {
-                    if (state ==State::PAUSED)
+                    if (state == State::PLAYING)
                     {
-                        state =State::PLAYING;
+                        state = State::PAUSED;
                     }
-                    else if (state ==State::PLAYING)
+                    else if (state == State::PAUSED)
                     {
-                        state=State::PAUSED;
+                        state = State::PLAYING;     
+                        clock.restart();
                     }
                 }
 
@@ -142,19 +168,25 @@ int main()
                     state = State::PLAYING;
                 }
 
-                if (event.key.code == Keyboard::Num1)
+                if (state == State::LEVEL_SELECT)
                 {
-                    pipeGap = 300;
-                }
+                    if (event.key.code == Keyboard::Num1)
+                    {
+                        pipeGap = 300;
+                        state = State::PLAYING;
+                    }
 
-                if (event.key.code == Keyboard::Num2)
-                {
-                    pipeGap = 220;
-                }
+                    if (event.key.code == Keyboard::Num2)
+                    {
+                        pipeGap = 220;
+                        state = State::PLAYING;
+                    }
 
-                if (event.key.code==Keyboard::Num3)
-                {
-                    pipeGap = 170;
+                    if (event.key.code == Keyboard::Num3)
+                    {
+                        pipeGap = 170;
+                        state = State::PLAYING;
+                    }
                 }
             }
         }
@@ -240,6 +272,15 @@ int main()
         if (state ==State::GAME_OVER)
         {
             window.draw(gameOverText);
+        }
+        if (state == State::PAUSED)
+        {
+            window.draw(pauseText);
+        }
+
+        if (state == State::LEVEL_SELECT)
+        {
+            window.draw(levelText);
         }
 
         window.display();
